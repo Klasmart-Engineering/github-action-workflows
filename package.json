@@ -1,0 +1,32 @@
+{
+  "name": "@kl-engineering/github-action-workflows",
+  "version": "1.0.0",
+  "description": "KidsLoop GitHub Action workflows",
+  "scripts": {
+    "lint": "eslint .",
+    "prepare": "husky install",
+    "release": "standard-version"
+  },
+  "main": "main.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KL-Engineering/github-action-workflows.git"
+  },
+  "author": "KidsLoop",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KL-Engineering/github-action-workflows/issues"
+  },
+  "homepage": "https://github.com/KL-Engineering/github-action-workflows#readme",
+  "devDependencies": {
+    "@commitlint/cli": "16.2.3",
+    "@commitlint/config-conventional": "16.2.1",
+    "@kl-engineering/eslint-config": "2.0.3",
+    "@rushstack/eslint-patch": "1.1.1",
+    "eslint": "8.12.0",
+    "eslint-plugin-yml": "0.14.0",
+    "husky": "7.0.4",
+    "standard-version": "9.3.2",
+    "typescript": "4.6.3"
+  }
+}

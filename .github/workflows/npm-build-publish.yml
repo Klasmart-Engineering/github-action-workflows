@@ -1,0 +1,48 @@
+name: (Job) Build & publish
+
+on:
+  workflow_call:
+    inputs:
+      region:
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+      save:
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      NODE_AUTH_TOKEN:
+        required: true
+
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          registry-url: https://npm.pkg.github.com/
+
+      - name: Find node_modules cache
+        id: cache-node_modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
