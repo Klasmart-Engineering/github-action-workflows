@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       prerelease:
-        description: 'Prerelease tag (optional)'
+        description: Prerelease tag (optional)
         required: false
         type: string
         default: ''
