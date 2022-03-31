@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v2.0.0%0Dv1.1.5) (2022-03-31)
+
+
+### ⚠ BREAKING CHANGES
+
+* separate npm build and npm publish workflow
+
+### 📚 Docs
+
+* updated usage example ([4e25f42](https://github.com/KL-Engineering/github-action-workflows/commits/4e25f427312e18f44727ec26850483676d59d70b))
+
+
+### 📦 Refactor
+
+* separate npm build and npm publish workflow ([bb892a0](https://github.com/KL-Engineering/github-action-workflows/commits/bb892a02bc38763b462ea13c46f537e9cf3c88f3))
+
+
+### ♻️ Chores
+
+* change environment name ([3be3054](https://github.com/KL-Engineering/github-action-workflows/commits/3be3054c7890963a2e8be3fc372f5cc9018f42ca))
+* update workflow names ([4619924](https://github.com/KL-Engineering/github-action-workflows/commits/46199240da6efb2e097ceda7b7c47398623455e0))
+
 ### [1.1.5](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v1.1.5%0Dv1.1.4) (2022-03-31)
 
 
