@@ -1,4 +1,4 @@
-name: (Job) Generate version
+name: (Job) npm generate version
 
 on:
   workflow_call:

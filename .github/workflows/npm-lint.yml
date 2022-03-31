@@ -1,4 +1,4 @@
-name: (Job) Lint
+name: (Job) npm lint
 
 on:
   workflow_call:

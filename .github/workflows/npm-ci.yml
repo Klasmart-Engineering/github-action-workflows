@@ -1,4 +1,4 @@
-name: (Job) Install dependencies
+name: (Job) npm install dependencies
 
 on:
   workflow_call:

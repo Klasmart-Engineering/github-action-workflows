@@ -1,4 +1,4 @@
-name: (Job) Jest tests (unit & integration)
+name: (Job) npm jest tests
 
 on:
   workflow_call:

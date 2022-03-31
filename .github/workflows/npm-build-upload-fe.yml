@@ -1,4 +1,4 @@
-name: (Job) Build & upload FE artifact
+name: (Job) npm build & upload FE artifact
 
 on:
   workflow_call:

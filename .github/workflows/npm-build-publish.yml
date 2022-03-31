@@ -1,4 +1,4 @@
-name: (Job) Build & publish npm package
+name: (Job) npm build & publish package
 
 on:
   workflow_call:
