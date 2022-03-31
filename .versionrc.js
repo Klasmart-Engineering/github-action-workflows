@@ -1,4 +1,7 @@
 module.exports = {
+    scrips: {
+        postchangelog: `./scripts/normalize-headings.sh`,
+    },
     types: [
         {
             type: `feat`,

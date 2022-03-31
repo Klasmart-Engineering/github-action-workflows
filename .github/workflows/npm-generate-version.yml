@@ -51,3 +51,18 @@ jobs:
           github_token: ${{ secrets.NODE_AUTH_TOKEN }}
           branch: ${{ github.ref }}
           tags: true
+
+      - name: Extract release notes
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v1
+
+      - name: Create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: ${{ inputs.prerelease != '' }}
+          body: ${{ steps.extract-release-notes.outputs.release_notes }}
