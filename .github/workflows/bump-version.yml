@@ -27,6 +27,6 @@ jobs:
     needs: [install]
     uses: ./.github/workflows/npm-generate-version.yml
     with:
-      environment: ${{ inputs.prerelease }}
+      prerelease: ${{ github.event.inputs.prerelease }}
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
