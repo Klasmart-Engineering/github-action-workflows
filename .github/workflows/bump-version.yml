@@ -12,7 +12,7 @@ on:
 jobs:
   confirm-version-generation:
     runs-on: ubuntu-latest
-    environment: env
+    environment: latest
     steps:
       - name: Debug message
         run: echo Version generation confirmed
