@@ -6,7 +6,11 @@ This repository is used to store reusable GitHub Action Workflows, to be used in
 
 In your local repository:
 ```yml
-
+jobs:
+  install:
+    uses: KL-Engineering/github-action-workflows/.github/workflows/npm-ci.yml@v1.1.5
+      secrets:
+        NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
 ```
 More details here: https://docs.github.com/en/actions/using-workflows/reusing-workflows
 
