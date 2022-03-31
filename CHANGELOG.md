@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.4](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v1.1.4%0Dv1.1.3) (2022-03-31)
+
+
+### 💎 Style
+
+* rename jobs ([028cd74](https://github.com/KL-Engineering/github-action-workflows/commits/028cd741f7e2a95ea782f2757eef62ab2f1bfcad))
+
 ### [1.1.3](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v1.1.3%0Dv1.1.2) (2022-03-31)
 
 ### [1.1.2](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v1.1.2%0Dv1.1.1) (2022-03-31)
