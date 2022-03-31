@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v1.1.0%0Dv1.0.0) (2022-03-31)
+
+
+### ✨ Features
+
+* automatically post release notes & normalize headings (#1) ([4613cda](https://github.com/KL-Engineering/github-action-workflows/commits/4613cda40e717d35557b4c0bfcd9e0b632fbdcef))
+
+
+### 🐛 Bug Fixes
+
+* bump version input ([d4a2a84](https://github.com/KL-Engineering/github-action-workflows/commits/d4a2a846b7894b264f34e31031e8814d4342a020))
+
 ## 1.0.0 (2022-03-30)
 
 
