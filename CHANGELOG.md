@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v1.1.1%0Dv1.1.0) (2022-03-31)
+
+
+### 🐛 Bug Fixes
+
+* published release tag name ([d2c4e0b](https://github.com/KL-Engineering/github-action-workflows/commits/d2c4e0bbbd298952141618450c6d68b3e21894a8))
+
 ## [1.1.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v1.1.0%0Dv1.0.0) (2022-03-31)
 
 
