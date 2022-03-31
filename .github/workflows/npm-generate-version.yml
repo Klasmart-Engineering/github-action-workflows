@@ -52,8 +52,9 @@ jobs:
           branch: ${{ github.ref }}
           tags: true
 
-      - uses: actions-ecosystem/action-get-latest-tag@v1
+      - name: Get latest tag
         id: get-latest-tag
+        run: echo ::set-output name=tag::$(git describe --tags --abbrev=0)
 
       - name: Extract release notes
         id: extract-release-notes
