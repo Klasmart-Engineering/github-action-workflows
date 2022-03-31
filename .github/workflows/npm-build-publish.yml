@@ -1,4 +1,4 @@
-name: (Job) Build & publish
+name: (Job) Build & publish npm package
 
 on:
   workflow_call:
@@ -20,7 +20,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build & publish
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -1,4 +1,4 @@
-name: (Job) Build frontend service
+name: (Job) Build & upload FE artifact
 
 on:
   workflow_call:
@@ -16,7 +16,7 @@ on:
 
 jobs:
   build:
-    name: Build frontend service
+    name: Build & upload FE artifact
     runs-on: ubuntu-latest
     permissions:
       contents: read
