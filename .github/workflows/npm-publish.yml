@@ -1,22 +1,10 @@
-name: (Job) npm build & publish package
+name: (Job) Publish package
 
 on:
   workflow_call:
-    inputs:
-      region:
-        required: true
-        type: string
-      environment:
-        required: true
-        type: string
-      save:
-        required: false
-        default: false
-        type: boolean
     secrets:
       NODE_AUTH_TOKEN:
         required: true
-
 
 jobs:
   build:
@@ -31,16 +19,12 @@ jobs:
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
-
-      - name: Find node_modules cache
-        id: cache-node_modules
-        uses: actions/cache@v3
+      
+      - name: Download build
+        uses: actions/download-artifact@v3
         with:
-          path: ./node_modules
-          key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
-
-      - name: Build
-        run: npm run build
+          name: build-${{ github.ref }}
+          path: dist
 
       - name: Publish
         run: npm publish
