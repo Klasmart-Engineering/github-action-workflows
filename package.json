@@ -1,6 +1,6 @@
 {
   "name": "@kl-engineering/github-action-workflows",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "KidsLoop GitHub Action workflows",
   "scripts": {
     "lint": "eslint .",
