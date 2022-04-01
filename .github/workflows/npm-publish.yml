@@ -19,6 +19,13 @@ jobs:
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
+          
+      - name: Find node_modules cache
+        id: cache-node_modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Get latest tag
         id: get-latest-tag
