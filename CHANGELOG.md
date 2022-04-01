@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.3](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v2.0.3%0Dv2.0.2) (2022-04-01)
+
+
+### 🐛 Bug Fixes
+
+* load node_modules before npm publish which runs npm prepare as well ([a6535ac](https://github.com/KL-Engineering/github-action-workflows/commits/a6535ac497bd64c36c3d1fef009e5c468f863b11))
+
 ### [2.0.2](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v2.0.2%0Dv2.0.1) (2022-04-01)
 
 
