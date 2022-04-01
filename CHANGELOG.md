@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.1](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v2.0.1%0Dv2.0.0) (2022-04-01)
+
+
+### ♻️ Chores
+
+* rename workflow ([e56e4f8](https://github.com/KL-Engineering/github-action-workflows/commits/e56e4f8239369591254d4bc4f783e879399680c2))
+
+
+### 🐛 Bug Fixes
+
+* build artifact name ([2595137](https://github.com/KL-Engineering/github-action-workflows/commits/2595137116d9002a8e0f4ef8d11173088a7b9111))
+
 ## [2.0.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v2.0.0%0Dv1.1.5) (2022-03-31)
 
 
