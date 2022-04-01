@@ -19,11 +19,15 @@ jobs:
         with:
           node-version: 16
           registry-url: https://npm.pkg.github.com/
+
+      - name: Get latest tag
+        id: get-latest-tag
+        run: echo ::set-output name=tag::$(git describe --tags --abbrev=0)
       
       - name: Download build
         uses: actions/download-artifact@v3
         with:
-          name: build-${{ github.ref }}
+          name: build-${{ steps.get-latest-tag.outputs.tag }}
           path: dist
 
       - name: Publish
