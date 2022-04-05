@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v2.1.0%0Dv2.0.3) (2022-04-05)
+
+
+### ✨ Features
+
+* add conventional pr title workflow (#2) ([a4533be](https://github.com/KL-Engineering/github-action-workflows/commits/a4533beb2a1b4f84b4509fdabc60c66e7d5b8e6b))
+
 ### [2.0.3](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v2.0.3%0Dv2.0.2) (2022-04-01)
 
 
