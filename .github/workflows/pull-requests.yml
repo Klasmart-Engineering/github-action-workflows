@@ -5,14 +5,14 @@ on:
     types: [opened, reopened, synchronize, edited]
 
 jobs:
+  conventional-pr-title:
+    uses: ./.github/workflows/conventional-pr-title.yml
+
   install:
     uses: ./.github/workflows/npm-ci.yml
     secrets:
       NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
 
-  conventional-pr-title:
-    uses: ./.github/workflows/conventional-pr-title.yml
-
   lint:
-    needs: [install, conventional-pr-title]
+    needs: [install]
     uses: ./.github/workflows/npm-lint.yml
