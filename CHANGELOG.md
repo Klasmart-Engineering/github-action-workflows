@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.0.0%0Dv2.1.0) (2022-04-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* separate publish into two separate workflows, one for builds, one for no build
+
+### ♻️ Chores
+
+* remove link between lint and conventional-pr-title workflows ([f101786](https://github.com/KL-Engineering/github-action-workflows/commits/f101786e58a6502aa3e9497e5c58ece47251e515))
+
+
+### ✨ Features
+
+* deploy-kidskube and docker-build-push (#3) ([d7627bf](https://github.com/KL-Engineering/github-action-workflows/commits/d7627bfc846394fb145167fb5cbca14c32855d4c))
+
+
+### ⚙️ Continuous Integrations
+
+* separate pull request pipeline for meta info (#4) ([d1455db](https://github.com/KL-Engineering/github-action-workflows/commits/d1455dbd0abaa8420746a551406589335b492246))
+
+
+### 📦 Refactor
+
+* separate publish into two separate workflows, one for builds, one for no build ([37adb5c](https://github.com/KL-Engineering/github-action-workflows/commits/37adb5ca092f5831f703610b125d8cd7d8c2566a))
+
 ## [2.1.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v2.1.0%0Dv2.0.3) (2022-04-05)
 
 
