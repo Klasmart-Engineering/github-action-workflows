@@ -2,12 +2,9 @@ name: Pull requests
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize, edited]
+    types: [opened, reopened, synchronize]
 
 jobs:
-  conventional-pr-title:
-    uses: ./.github/workflows/conventional-pr-title.yml
-
   install:
     uses: ./.github/workflows/npm-ci.yml
     secrets:
