@@ -1,4 +1,4 @@
-name: (Job) npm publish
+name: (Job) npm publish build
 
 on:
   workflow_call:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: npm publish
+    name: npm publish build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -26,6 +26,16 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Get latest tag
+        id: get-latest-tag
+        run: echo ::set-output name=tag::$(git describe --tags --abbrev=0)
+      
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: build-${{ steps.get-latest-tag.outputs.tag }}
+          path: dist
 
       - name: Publish
         run: npm publish
