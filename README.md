@@ -8,7 +8,7 @@ In your local repository:
 ```yml
 jobs:
   install:
-    uses: KL-Engineering/github-action-workflows/.github/workflows/npm-ci.yml@v1.1.5
+    uses: KL-Engineering/github-action-workflows/.github/workflows/npm-ci.yml@v3.0.0
       secrets:
         NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_TOKEN }}
 ```
