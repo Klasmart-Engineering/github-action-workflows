@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.0.1%0Dv3.0.0) (2022-04-08)
+
+
+### 🐛 Bug Fixes
+
+* change conventional commit pr title preset to allow breaking change indicator (#5) ([e6aad2b](https://github.com/KL-Engineering/github-action-workflows/commits/e6aad2bcb1956551522e294540c8230826db2c9a))
+
 ## [3.0.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.0.0%0Dv2.1.0) (2022-04-06)
 
 
