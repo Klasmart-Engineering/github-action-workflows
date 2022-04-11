@@ -1,0 +1,42 @@
+name: "(Action) npm build artefact"
+description: "Action that uses npm to build artefacts"
+
+inputs:
+  region:
+    required: true
+    description: "region name under deploy/config"
+  environment:
+    required: true
+    description: ".env.<environment> under deploy/config/<region>"
+  release_dir:
+    required: false
+    default: dist
+    description: "The directory created as a result of the npm build command"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: nschloe/action-cached-lfs-checkout@v1
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 16
+        registry-url: https://npm.pkg.github.com/
+
+    - name: Find node_modules cache
+      id: cache-node_modules
+      uses: actions/cache@v3
+      with:
+        path: ./node_modules
+        key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+    - name: Copy environment variables
+      shell: bash
+      run: cp deploy/config/${{ inputs.region }}/.env.${{ inputs.environment }} .env
+
+    - name: Build
+      shell: bash
+      run: npm run build
+
+    - name: Add Version file
+      shell: bash
+      run: jq "{\"Version\":\"$GITHUB_REF_NAME\",\"Commit\":\"$GITHUB_SHA\"}" --raw-output --null-input > ${{ inputs.release_dir }}/version.txt

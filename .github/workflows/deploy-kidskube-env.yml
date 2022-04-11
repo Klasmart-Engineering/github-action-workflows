@@ -25,19 +25,19 @@ on:
       ARGOCD_AUTH_PASSWORD:
         required: true
 
-env:
-  # Due to a Teleport bug, we are using K8 port forwarding to connect to ArgoCD for now.
-  TOOLS_KUBECONFIG: "${{ github.workspace }}/.kube/tools-kubeconfig.yml"
-  ARGOCD_SERVER: localhost:8080
-  ARGOCD_OPTS: --grpc-web --insecure --plaintext
-  ARGOCD_APP: ${{ input.argocd_app }}
-  ARGOCD_APP_CHART_TAG_PATH: ${{ input.argocd_app_chart_tag_path }}
 
 jobs:
   deploy:
-    environment: ${{ input.environment }}
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    name: Deploy to ${{ input.environment }}
+    name: Deploy to ${{ inputs.environment }}
+    env:
+      # Due to a Teleport bug, we are using K8 port forwarding to connect to ArgoCD for now.
+      TOOLS_KUBECONFIG: "${{ github.workspace }}/.kube/tools-kubeconfig.yml"
+      ARGOCD_SERVER: localhost:8080
+      ARGOCD_OPTS: --grpc-web --insecure --plaintext
+      ARGOCD_APP: ${{ inputs.argocd_app }}
+      ARGOCD_APP_CHART_TAG_PATH: ${{ inputs.argocd_app_chart_tag_path }}
     steps:
       # Set up the kubeconfig file in GHA secrets first
       - name: Set up kubernetes config file
@@ -61,7 +61,7 @@ jobs:
       - name: Configure tags
         run: |
           export BRANCH_TAG=$(echo "${GITHUB_REF_NAME}" | sed -E 's/([^0-9a-zA-Z]+)/-/g' | awk '{print tolower($0)}')
-          export ENV_TAG="${{input.region}}-${{input.environment}}"
+          export ENV_TAG="${{inputs.region}}-${{inputs.environment}}"
           export DEPLOY_TAG=$BRANCH_TAG-$ENV_TAG-${GITHUB_SHA::7}
           echo "TAG    : ${TAG}"
           echo "COMMIT : ${GITHUB_SHA::7}"
@@ -102,7 +102,7 @@ jobs:
           options: sync ${{ env.ARGOCD_APP }} --timeout 300
 
       - name: Status - ArgoCD url
-        if: always()
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         uses: ouzi-dev/commit-status-updater@v1.1.0
         with:
           status: "${{ job.status }}"

@@ -1,0 +1,30 @@
+name: (Action) Upload release to S3
+description: Uploade a release to AWS S3
+
+inputs:
+  aws-region:
+    required: true
+    description: "AWS Region of the deployed site"
+  aws-s3-bucket:
+    required: true
+    description: "S3 bucket containing the site"
+  AWS_ACCESS_KEY_ID:
+    required: true
+    description: "AWS Access Key"
+  AWS_SECRET_ACCESS_KEY:
+    required: true
+    description: "AWS Secret Access Key"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ inputs.aws-region }}
+    - name: Upload new version
+      shell: bash
+      run: |
+        aws s3 sync dist s3://${{ inputs.aws-s3-bucket }}/${GITHUB_REF_NAME}

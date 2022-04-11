@@ -1,0 +1,50 @@
+name: (Action) Update cloudfront distribution
+description: Update a cloudfront distribution by updating the S3 source and invalidating the Cloudfront cache.
+
+inputs:
+  aws-region:
+    required: true
+    description: "AWS Region of the deployed site"
+  aws-s3-bucket:
+    required: true
+    description: "S3 bucket containing the site"
+  aws-s3-bucket-key:
+    required: true
+    default: latest
+    description: "Bucket key where the site is deployed. Defaults to: latest"
+  AWS_ACCESS_KEY_ID:
+    required: true
+    description: "AWS Access Key"
+  AWS_SECRET_ACCESS_KEY:
+    required: true
+    description: "AWS Secret Access Key"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ inputs.aws-region }}
+    - name: Get currently deployed version, in case of rollback
+      shell: bash
+      run: |
+        aws s3api get-object --bucket ${{ inputs.aws-s3-bucket }} --key ${{ inputs.aws-s3-bucket-key }}/version.txt rollback_version.txt
+        ROLLBACK_VERSION=$(cat rollback_version.txt |jq .Version |tr -d '"'|awk -F/ '{print $NF}')
+        ROLLBACK_COMMIT=$(cat rollback_version.txt |jq .Commit |tr -d '"'|awk -F/ '{print $NF}')
+        echo "ROLLBACK VERSION: ${ROLLBACK_VERSION}, ROLLBACK COMMIT: ${ROLLBACK_COMMIT}"
+    - name: Deploy new version
+      shell: bash
+      run: |
+        aws s3 sync s3://${{ inputs.aws-s3-bucket }}/${GITHUB_REF_NAME} s3://${{ inputs.aws-s3-bucket }}/${{ inputs.aws-s3-bucket-key }} --delete
+    - name: Cloudfront cache invalidation
+      shell: bash
+      run: |
+        CLOUDFRONT_DISTRIBUTION_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Origins.Items[?starts_with(DomainName, \`${{ inputs.aws-s3-bucket }}\`)]]".Id --output text)
+        if [[ -z CLOUDFRONT_DISTRIBUTION_ID ]]; then
+          echo "Cloudfront Id not found. Exiting."
+          exit 1
+        fi
+        aws cloudfront create-invalidation --paths "/*" --distribution-id ${CLOUDFRONT_DISTRIBUTION_ID}

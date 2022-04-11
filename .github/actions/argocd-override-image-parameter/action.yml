@@ -1,0 +1,111 @@
+name: (Action) Update ArgoCD image parameter override
+description: "Update ArgoCD image parameter override"
+
+inputs:
+  region:
+    required: true
+    description: "region name under deploy/config"
+  environment:
+    required: true
+    description: ".env.<environment> under deploy/config/<region>"
+  argocd_app:
+    required: true
+    description: "Name of argocd application"
+  argocd_app_chart_tag_path:
+    required: true
+    description: "chart tag path property of the argocd application"
+  argocd_server:
+    required: false
+    default: localhost:8080
+    description: "ArgoCD endpoint"
+  argocd_opts:
+    required: false
+    default: --grpc-web --insecure --plaintext
+    description: "ArgoCD connection properties"
+  TOOLS_KUBECONFIG_CONTENT_B64:
+    required: true
+    description: "Kubeconfig file content stored as a github secret"
+  ARGOCD_AUTH_USERNAME:
+    required: true
+    description: "ArgoCD username stored as a secret"
+  ARGOCD_AUTH_PASSWORD:
+    required: true
+    description: "ArgoCD password stored as a secret"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set kubeconfig file
+      run: echo "TOOLS_KUBECONFIG=${{ github.workspace }}/.kube/tools-kubeconfig.yml" >> $GITHUB_ENV
+      shell: bash
+      # Set up the kubeconfig file in GHA secrets first
+    - name: Set up kubernetes config file
+      run: |
+        mkdir -p '${{ github.workspace }}/.kube' \
+        && echo '${{ inputs.TOOLS_KUBECONFIG_CONTENT_B64 }}' | base64 -d > ${{ env.TOOLS_KUBECONFIG }}
+      shell: bash
+    - name: Test kubernetes connection
+      run: "kubectl version --kubeconfig ${{ env.TOOLS_KUBECONFIG }}"
+      shell: bash
+    - name: Configure ArgoCD CLI
+      uses: clowdhaus/argo-cd-action@v1.9.0
+      with:
+        version: 2.2.5
+        command: version
+        options: --client
+
+    - name: Set up kubernetes port-forwarding connection to tools cluster
+      run: "kubectl port-forward -n argocd svc/argocd-server 8080:80 --kubeconfig ${{ env.TOOLS_KUBECONFIG }} &"
+      shell: bash
+    - name: Configure tags
+      shell: bash
+      run: |
+        export BRANCH_TAG=$(echo "${GITHUB_REF_NAME}" | sed -E 's/([^0-9a-zA-Z]+)/-/g' | awk '{print tolower($0)}')
+        export ENV_TAG="${{inputs.region}}-${{inputs.environment}}"
+        export DEPLOY_TAG=$BRANCH_TAG-$ENV_TAG-${GITHUB_SHA::7}
+        echo "TAG    : ${TAG}"
+        echo "COMMIT : ${GITHUB_SHA::7}"
+        echo "IMAGE  : $DEPLOY_TAG"
+        echo "TAG=$TAG" >> $GITHUB_ENV
+        echo "DEPLOY_TAG=$DEPLOY_TAG" >> $GITHUB_ENV
+
+    - name: Log into ArgoCD
+      uses: clowdhaus/argo-cd-action@v1.9.0
+      with:
+        version: 2.2.5
+        command: login
+        options: >
+          '${{ inputs.argocd_server }}'
+          --username '${{ inputs.ARGOCD_AUTH_USERNAME }}'
+          --password '${{ inputs.ARGOCD_AUTH_PASSWORD }}'
+          ${{ inputs.argocd_opts }}
+
+    - name: Show ArgoCD app info
+      uses: clowdhaus/argo-cd-action@v1.9.0
+      with:
+        version: 2.2.5
+        command: app
+        options: get ${{ inputs.argocd_app }}
+
+    - name: Set ArgoCD app tag to build output
+      uses: clowdhaus/argo-cd-action@v1.9.0
+      with:
+        version: 2.2.5
+        command: app
+        options: set ${{ inputs.argocd_app }} -p ${{ inputs.argocd_app_chart_tag_path }}=${{ env.DEPLOY_TAG }}
+
+    - name: Sync the app now
+      uses: clowdhaus/argo-cd-action@v1.9.0
+      with:
+        version: 2.2.5
+        command: app
+        options: sync ${{ inputs.argocd_app }} --timeout 300
+
+    - name: Status - ArgoCD url
+      if: github.event_name == 'push' || github.event_name == 'pull_request'
+      uses: ouzi-dev/commit-status-updater@v1.1.0
+      with:
+        status: "${{ job.status }}"
+        url: https://argocd.kidsloop.teleport.sh/applications/${{ inputs.argocd_app }}
+        description: "Click to view the app in ArgoCD"
+        name: "ArgoCD"
