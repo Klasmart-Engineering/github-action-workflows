@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.1.0%0Dv3.0.1) (2022-04-13)
+
+
+### ✨ Features
+
+* Adding new actions (#7) ([44facad](https://github.com/KL-Engineering/github-action-workflows/commits/44facad37173b9cc3f13b5ebdb562307577f5d18))
+* **version-bump:** add release_as parameter (#8) ([deb04d5](https://github.com/KL-Engineering/github-action-workflows/commits/deb04d5abaf4aaa5fbc72d3e06ee345c9e693df7))
+
 ### [3.0.1](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.0.1%0Dv3.0.0) (2022-04-08)
 
 
