@@ -7,6 +7,10 @@ on:
         required: false
         type: string
         default: ''
+      release_as:
+        required: false
+        type: string
+        default: auto
     secrets:
       NODE_AUTH_TOKEN:
         required: true
@@ -37,13 +41,10 @@ jobs:
           git config --global user.email "KLG-SVC-Github-User@kidsloop.live"
           git config --global user.name "github-user-kidsloop"
 
-      - name: Generate prerelease version
-        if: ${{ inputs.prerelease != '' }}
-        run: npm run release -- --prerelease ${{ inputs.prerelease }}
-
-      - name: Generate version
-        if: ${{ inputs.prerelease == '' }}
-        run: npm run release
+      - name: Generate release version
+        run: npm run release -- 
+          ${{ inputs.prerelease != '' && format('--prerelease {0}', inputs.prerelease) || '' }}
+          ${{ inputs.release_as != 'auto' && format('--release-as {0}', inputs.release_as) || '' }}
 
       - name: Push changes
         uses: ad-m/github-push-action@master
