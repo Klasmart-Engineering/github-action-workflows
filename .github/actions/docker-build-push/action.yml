@@ -19,6 +19,10 @@ inputs:
     required: false
     description: 'Dockerfile name'
     default: Dockerfile
+  dockerfile_context:
+    required: false
+    description: 'Dockerfile build context'
+    default: .
   ecr_aws_region:
     required: false
     description: 'ECR AWS region'
@@ -59,7 +63,7 @@ runs:
         set +x
         export ENV_TAG=$(echo "${{ env.REGION }}-${{ env.ENVIRONMENT }}" | sed -E 's/([^0-9a-zA-Z]+)/-/g' | awk '{print tolower($0)}')
         export BRANCH_TAG=$(echo "${GITHUB_REF_NAME}" | sed -E 's/([^0-9a-zA-Z]+)/-/g' | awk '{print tolower($0)}')
-        docker build -t $ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest -f ${{ inputs.dockerfile_dir }}/${{ inputs.dockerfile_name }} ${{ inputs.dockerfile_dir }}
+        docker build -t $ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest -f ${{ inputs.dockerfile_dir }}/${{ inputs.dockerfile_name }} ${{ inputs.dockerfile_context }}
         docker tag $ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest
         docker tag $ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-${GITHUB_SHA::7}
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest
