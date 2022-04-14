@@ -14,7 +14,7 @@ on:
     outputs:
       tag: 
         description: "The generated tag from the workflow"
-        value: ${{ generate-version.outputs.tag }}
+        value: ${{ jobs.generate-version.outputs.tag }}
     secrets:
       NODE_AUTH_TOKEN:
         required: true
