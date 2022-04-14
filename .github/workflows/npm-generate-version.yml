@@ -11,6 +11,10 @@ on:
         required: false
         type: string
         default: auto
+    outputs:
+      tag: 
+        description: "The generated tag from the workflow"
+        value: ${{ generate-version.outputs.tag }}
     secrets:
       NODE_AUTH_TOKEN:
         required: true
@@ -19,6 +23,8 @@ jobs:
   generate-version:
     name: Generate version
     runs-on: ubuntu-latest
+    outputs: 
+      tag: ${{ steps.get-latest-tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
         with:
