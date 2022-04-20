@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.1](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.1.1%0Dv3.1.0) (2022-04-20)
+
+
+### ⚙️ Continuous Integrations
+
+* add optional build context to action (#10) ([257bb0e](https://github.com/KL-Engineering/github-action-workflows/commits/257bb0e28fbe6163c9c7e333471aa571bd226bf0))
+* add optional dockerfile_context (#9) ([ba70d46](https://github.com/KL-Engineering/github-action-workflows/commits/ba70d467ab03c339edc93ca849837b6a860981fe))
+* don't replace periods in image tags (#11) ([72697e1](https://github.com/KL-Engineering/github-action-workflows/commits/72697e1014be51b7e1879f115eb1db31817baa70))
+* **npm-generate-version, package:** add outputs to generate version (#12) ([af92bc4](https://github.com/KL-Engineering/github-action-workflows/commits/af92bc4dae9521b06053761eefba78151c529f2a))
+
+
+### 🐛 Bug Fixes
+
+* **npm-generate-version:** fix generate version (#13) ([fd75ae1](https://github.com/KL-Engineering/github-action-workflows/commits/fd75ae138cbb40d666d49b091ec2a4220a0ebeb3))
+
 ## [3.1.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.1.0%0Dv3.0.1) (2022-04-13)
 
 
