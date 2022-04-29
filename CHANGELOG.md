@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.2.0%0Dv3.1.1) (2022-04-29)
+
+
+### ✨ Features
+
+* multi arch containers (#16) ([6bc07ea](https://github.com/KL-Engineering/github-action-workflows/commits/6bc07ea0fbe8b691ca69533f42280b659061251b))
+
 ### [3.1.1](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.1.1%0Dv3.1.0) (2022-04-20)
 
 
