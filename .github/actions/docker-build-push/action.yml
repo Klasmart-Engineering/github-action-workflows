@@ -2,46 +2,78 @@ name: (Action) docker build & push to ECR
 description: "Action for docker build & push to ECR"
 
 inputs:
-  region:
+  image_name:
     required: true
-    description: "region name under deploy/config"
-  environment:
-    required: true
-    description: ".env.<environment> under deploy/config/<region>"
-  ecr_repository:
-    required: true
-    description: 'ECR application repo'
-  dockerfile_dir:
-    description: 'Directory containing the Dockerfile'
-    required: true
-    default: deploy/
-  dockerfile_name:
+    description: "application project name"
+  tags:
     required: false
-    description: 'Dockerfile name'
-    default: Dockerfile
-  dockerfile_context:
+    description: "docker image tags to use. Values are List/CSV. https://github.com/docker/build-push-action#inputs"
+    default: |
+      type=schedule
+      type=ref,event=branch
+      type=ref,event=tag
+      type=ref,event=pr
+  tags_flavor:
     required: false
-    description: 'Dockerfile build context'
+    description: "https://github.com/docker/metadata-action#flavor-input"
+    default: |
+      latest=auto
+      prefix=
+      suffix=
+  dockerfile:
+    description: "path and name of the Dockerfile"
+    required: false
+    default: "deploy/Dockerfile"
+  docker_build_context:
+    required: false
+    description: "Docker build context"
     default: .
+  platforms:
+    required: false
+    description: "The platforms to build the image for. e.g. linux/amd64"
+    default: linux/amd64,linux/arm64
   ecr_aws_region:
     required: false
-    description: 'ECR AWS region'
+    description: "ECR AWS region"
     default: eu-west-2
   ecr_registry:
     required: false
-    description: 'ECR AWS endpoint'
+    description: "ECR AWS endpoint"
     default: 942095822719.dkr.ecr.eu-west-2.amazonaws.com
   ECR_AWS_ACCESS_KEY_ID:
     required: true
-    description: 'ECR AWS Access Key Id, stored as a secret'
+    description: "ECR AWS Access Key Id, stored as a secret"
   ECR_AWS_SECRET_ACCESS_KEY:
     required: true
-    description: 'ECR AWS Secret Access Key, stored as a secret'
+    description: "ECR AWS Secret Access Key, stored as a secret"
 
+outputs:
+  image_version:
+    value: ${{ steps.meta.outputs.version }}
+    description: The version (tag) of the image pushed to ECR
+  image_tags:
+    value: ${{ steps.meta.outputs.tags }}
+    description: The complete image URI in ECR
 
 runs:
   using: "composite"
   steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: docker/setup-buildx-action@v1
+      with:
+        install: true
+
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ inputs.ecr_registry }}/${{ inputs.image_name }}
+        tags: ${{ inputs.tags }}
+        flavor: ${{ inputs.tags_flavor }}
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -49,22 +81,63 @@ runs:
         aws-secret-access-key: ${{ inputs.ECR_AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ inputs.ecr_aws_region }}
 
-    - name: Login to Amazon ECR
-      uses: aws-actions/amazon-ecr-login@v1
+    - name: Login to ECR
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ inputs.ecr_registry }}
+        ecr: true
 
-    - name: Build and Push Container
+    # For future maintainers:
+    # There is a docker provided build-push-action that builds images concurrently
+    # Unfortunately, it leaves the architecture images untagged and only tags
+    # the manifest list.
+    # This is the reason we're going with a custom script.
+
+    # - name: Build and push
+    #   id: build_push
+    #   uses: docker/build-push-action@v2
+    #   with:
+    #     context: ${{ inputs.docker_build_context }}
+    #     platforms: ${{ inputs.platforms }}
+    #     push: ${{ inputs.push_to_registry }}
+    #     tags: ${{ steps.meta.outputs.tags }}
+    #     file: ${{ inputs.dockerfile }}
+
+    - name: Build and Push
       shell: bash
-      env:
-        ECR_REGISTRY: ${{ inputs.ecr_registry }}
-        ECR_REPOSITORY: ${{ inputs.ecr_repository }}
-        ENVIRONMENT: ${{ inputs.environment }}
-        REGION: ${{ inputs.region }}
       run: |
-        set +x
-        export ENV_TAG=$(echo "${{ env.REGION }}-${{ env.ENVIRONMENT }}" | sed -E 's/([^0-9a-zA-Z\.]+)/-/g' | awk '{print tolower($0)}')
-        export BRANCH_TAG=$(echo "${GITHUB_REF_NAME}" | sed -E 's/([^0-9a-zA-Z\.]+)/-/g' | awk '{print tolower($0)}')
-        docker build -t $ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest -f ${{ inputs.dockerfile_dir }}/${{ inputs.dockerfile_name }} ${{ inputs.dockerfile_context }}
-        docker tag $ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest
-        docker tag $ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-${GITHUB_SHA::7}
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-latest
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$BRANCH_TAG-$ENV_TAG-${GITHUB_SHA::7}
+        TAGS_JSON='${{ steps.meta.outputs.json }}'
+        BUILDX_PLATFORMS=${{ inputs.platforms }}
+        FULL_IMAGE_NAME="${{ inputs.ecr_registry }}/${{ inputs.image_name }}"
+        IMAGE_VERSION=${{ steps.meta.outputs.version }}
+        DOCKERFILE=${{ inputs.dockerfile }}
+        BUILD_CONTEXT=${{ inputs.docker_build_context }}
+
+        PLATFORMS=( $(echo ${BUILDX_PLATFORMS} | sed "s/,/ /g") )
+        echo "Platforms to build: ${PLATFORMS[@]}"
+        CREATED_IMAGES=""
+        for ARCH in "${PLATFORMS[@]}"
+        do
+            echo "Starting ${ARCH} build at $(date)"
+            ARCH_TAG=$(echo ${ARCH} |sed "s/\//_/g")
+            echo "Tagging with: ${ARCH_TAG}"
+            docker buildx build --push --file ${DOCKERFILE} --platform ${ARCH} --tag ${FULL_IMAGE_NAME}:${IMAGE_VERSION}-${ARCH_TAG} ${BUILD_CONTEXT}
+
+            if [[ -z ${CREATED_IMAGES} ]]; then
+                CREATED_IMAGES="${FULL_IMAGE_NAME}:${IMAGE_VERSION}-${ARCH_TAG}"
+            else
+                CREATED_IMAGES="$CREATED_IMAGES ${FULL_IMAGE_NAME}:${IMAGE_VERSION}-${ARCH_TAG}"
+            fi
+            echo "Finished ${ARCH} build at $(date)"
+        done
+
+        echo "Creating Manifest List"
+        TAGS=( $(echo -E ${TAGS_JSON} | jq --raw-output '.tags[]'|tr '\n' ' ') )
+        for TAG in "${TAGS[@]}"
+        do
+            echo "Creating Manifest List ${TAG} at $(date)..."
+            docker manifest create ${TAG} $(echo ${CREATED_IMAGES})
+            echo "Pushing Manifest List ${TAG} at $(date)..."
+            docker manifest push ${TAG}
+            echo ""
+        done

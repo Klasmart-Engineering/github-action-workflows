@@ -14,6 +14,9 @@ inputs:
   argocd_app_chart_tag_path:
     required: true
     description: "chart tag path property of the argocd application"
+  argocd_app_chart_tag_value:
+    required: true
+    description: "the new argocd application tag value"
   argocd_server:
     required: false
     default: localhost:8080
@@ -57,17 +60,6 @@ runs:
     - name: Set up kubernetes port-forwarding connection to tools cluster
       run: "kubectl port-forward -n argocd svc/argocd-server 8080:80 --kubeconfig ${{ env.TOOLS_KUBECONFIG }} &"
       shell: bash
-    - name: Configure tags
-      shell: bash
-      run: |
-        export BRANCH_TAG=$(echo "${GITHUB_REF_NAME}" | sed -E 's/([^0-9a-zA-Z]+)/-/g' | awk '{print tolower($0)}')
-        export ENV_TAG="${{inputs.region}}-${{inputs.environment}}"
-        export DEPLOY_TAG=$BRANCH_TAG-$ENV_TAG-${GITHUB_SHA::7}
-        echo "TAG    : ${TAG}"
-        echo "COMMIT : ${GITHUB_SHA::7}"
-        echo "IMAGE  : $DEPLOY_TAG"
-        echo "TAG=$TAG" >> $GITHUB_ENV
-        echo "DEPLOY_TAG=$DEPLOY_TAG" >> $GITHUB_ENV
 
     - name: Log into ArgoCD
       uses: clowdhaus/argo-cd-action@v1.9.0
@@ -92,7 +84,7 @@ runs:
       with:
         version: 2.2.5
         command: app
-        options: set ${{ inputs.argocd_app }} -p ${{ inputs.argocd_app_chart_tag_path }}=${{ env.DEPLOY_TAG }}
+        options: set ${{ inputs.argocd_app }} -p ${{ inputs.argocd_app_chart_tag_path }}=${{ inputs.argocd_app_chart_tag_value }}
 
     - name: Sync the app now
       uses: clowdhaus/argo-cd-action@v1.9.0
