@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.2.1](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.2.1%0Dv3.2.0) (2022-05-04)
+
+
+### 🐛 Bug Fixes
+
+* git lfs checkout for internal npm packages (#18) ([11207d9](https://github.com/KL-Engineering/github-action-workflows/commits/11207d944a8e5d06d7bd51d13cdd716acf2de0bb))
+
 ## [3.2.0](https://github.com/KL-Engineering/github-action-workflows/branches/compare/v3.2.0%0Dv3.1.1) (2022-04-29)
 
 
