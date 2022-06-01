@@ -1,0 +1,87 @@
+name: Publish charts
+
+env:
+  HELM_EXPERIMENTAL_OCI: 1 # enable OCI support
+  HELM_VERSION_TO_INSTALL: 3.9.0 # version of HELM to install
+  GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/helm/charts # Where to push the chart? (Warning needs to be lowercase)
+
+on:
+  workflow_call:
+
+jobs:
+  find-charts:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.find-charts.outputs.matrix }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - id: find-charts
+        run: |
+          charts=$(find . -name Chart.yaml | cut -c3- | rev | cut -d '/' -f 2- | rev)
+          echo $charts
+          matrix=$((
+            echo '{ "chart" : ['
+            echo $charts | sed -r 's/(.*)/"\1"/' | sed -r 's/[[:space:]]+/","/g' | paste -s -d, -
+            echo " ]}"
+          ) | jq -c .)
+          echo $matrix
+          echo $matrix | jq .
+          echo "::set-output name=matrix::$matrix"
+
+  publish-charts:
+    # Use matrix strategy to publish each chart
+    needs: find-charts
+    strategy:
+      # Don't fail all if one fails..
+      fail-fast: false
+      matrix: ${{fromJson(needs.find-charts.outputs.matrix)}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        name: checkout repo
+      
+      - name: install helm
+        uses: Azure/setup-helm@v1
+        with:
+          # Version of helm
+          version: ${{ env.HELM_VERSION_TO_INSTALL }} # default is latest
+
+      - name: login to GHCR using helm
+        shell: bash
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ${{ env.GHCR_IMAGE }} --username ${{ github.repository_owner }} --password-stdin
+
+      - name: download helm dependencies
+        shell: bash
+        run: |
+          helm dependency update ${{ matrix.chart }}
+
+      - name: check that the chart compiles with the default options
+        shell: bash
+        run: |
+          helm template ${{ matrix.chart }} --debug
+
+      - name: lint the chart
+        shell: bash
+        run: |
+          helm lint ${{ matrix.chart }} --strict
+
+      - name: publish chart to GHCR
+        shell: bash
+        run: |
+          export CHART_NAME=$(echo ${{ matrix.chart }} | rev | cut -d '/' -f 1 | rev)
+          export CHART_VERSION=$(cat ${{ matrix.chart }}/Chart.yaml | grep "^version" | head -n 1 | cut -d ":" -f 2 | xargs)
+          export CHART_TAG=$CHART_VERSION
+          echo CHART_SHA={{ github.sha }}
+          package_output=$(helm package ${{ matrix.chart }})
+          echo $package_output
+          package_file=$(echo $package_output | grep "saved it to:" | cut -d ":" -f 2 | xargs)
+          echo $package_file
+          oci_remote=$(echo "oci://${{ env.GHCR_IMAGE }}" | tr '[:upper:]' '[:lower:]')
+          helm push $package_file $oci_remote
