@@ -13,6 +13,10 @@ on:
         required: false
         default: false
         type: boolean
+      gitlfs:
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build:
@@ -23,6 +27,11 @@ jobs:
       packages: write
     steps:
       - uses: nschloe/action-cached-lfs-checkout@v1
+        if: ${{ inputs.gitlfs }}
+
+      - uses: actions/checkout@v3
+        if: ${{ !inputs.gitlfs }}
+
       - uses: actions/setup-node@v2
         with:
           node-version: 16
